@@ -22,4 +22,36 @@ router.post('/', function(req, res, next) {
   }
 });
 
+function getChat(req, res) {
+  var chatID = parseInt(req.params.chatID);
+  if (isNaN(chatID)) {
+    throw new Error('Please pass valid number as chat ID');
+  }
+  var chat = chats[chatID];
+  if (!chat) {
+    res.status(404).send('404: no such chat!');
+  }
+  return chat;
+}
+
+router.get('/:chatID', function(req, res, next) {
+  var chat = getChat(req, res);
+  res.send(chat);
+});
+
+router.get('/:chatID/messages', function(req, res, next) {
+  var chat = getChat(req, res);
+  res.send(chat.messages);
+});
+
+router.post('/:chatID/messages', function(req, res, next) {
+  var chat = getChat(req, res);
+  var message = req.body.text;
+  if(!message) {
+    throw new Error('Need text');
+  }
+  chat.messages.push(message);
+  res.send(message);
+});
+
 module.exports = router;
